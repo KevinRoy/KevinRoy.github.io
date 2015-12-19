@@ -4,7 +4,7 @@
   <subtitle><![CDATA[幽默是生活的境界，你就是哭，都要哭得有幽默感一点]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.baidu.com/"/>
-  <updated>2015-12-08T16:49:09.000Z</updated>
+  <updated>2015-12-19T10:41:37.000Z</updated>
   <id>http://www.baidu.com/</id>
   
   <author>
@@ -15,21 +15,79 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[蜀将何在(第三方登录和分享相关和gcm)]]></title>
+    <link href="http://www.baidu.com/2015/12/19/%E8%9C%80%E5%B0%86%E4%BD%95%E5%9C%A8/"/>
+    <id>http://www.baidu.com/2015/12/19/蜀将何在/</id>
+    <published>2015-12-19T10:29:03.000Z</published>
+    <updated>2015-12-19T10:41:37.000Z</updated>
+    <content type="html"><![CDATA[<p>有时候我们开发，可能会遇到一些系统化的难题，会去请一些第三方的来帮忙，调用他们的api，导入他们的SDK等等，由于我司的app是针对海外市场的，所以有些登录，分享，推送都要用到国外的第三方相关。这里小谈一下自己遇到的一些问题</p>
+<a id="more"></a>
+<h4 id="1_登录">1  登录</h4><p>这里说说自己遇到的一些问题</p>
+<blockquote>
+<ul>
+<li>Facebook+</li>
+<li>Google+</li>
+</ul>
+</blockquote>
+<p><strong>Facebook</strong>以前的app有老版本，但是最新的都已经更新了很大了，故决定重新撸一个。<strong>Facebook</strong>由于一些appId，token，权限，包名等等之类的，都已经申请好了，所以这些不用担心，顿时心里感觉轻松不少，<strong>Facebook</strong>的登录相对简单一点，到时候直接去请CallbackManager（<a href="https://developers.facebook.com/docs/facebook-login/android" target="_blank" rel="external">末将在此</a>）这员大将就可以搞定一切。只是注意一下登录需要开通的权限即可（<a href="https://developers.facebook.com/docs/facebook-login/android/permissions" target="_blank" rel="external">末将在此</a>）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LoginManager.getInstance().logInWithReadPermissions(<span class="keyword">this</span>, Arrays.asList(<span class="string">"public_profile"</span>, <span class="string">"user_friends"</span>));</span><br></pre></td></tr></table></figure></p>
+<p><strong>Google+</strong>就有些少许麻烦了，其实如果你不需要tokenId的话倒可以直接跑demo，<a href="http://www.mob.com/#/" target="_blank" rel="external">ShareSDK</a>都可以获取你需要的一些基本登录信息，但是如果服务器这边要根据你的登录tokenId去做一些操作，这样就不行，所以如果要拿TokenId，准备工作就比较繁琐(<a href="https://developers.google.com/identity/sign-in/android/start-integrating" target="_blank" rel="external">末将在此</a>），主要分下面几步：</p>
+<blockquote>
+<ul>
+<li>打开网页（对不起，看到大家有些严肃，来调节气氛，言归正传）</li>
+<li>去<strong>Google Developer Console</strong>开启<strong>Google+</strong>的相关API，其实很多时候你需要用google的api都要在这里开启和管理（<a href="https://console.developers.google.com/apis/library" target="_blank" rel="external">末将在此</a>）</li>
+<li>去获取获取一个<code>configuration file</code>，填写包名和你的app名字啥的，然后到时候生成的是一个json文件，要拷到你的app目录里面（google文档上面写的是 <code>app/</code> or <code>mobile/</code>下，笔者比较求稳，单独建立了一个文件夹来放json文件，其他文件夹大家有空可以试试）（<a href="https://developers.google.com/mobile/add?platform=android&amp;cntapi=signin&amp;cnturl=https:%2F%2Fdevelopers.google.com%2Fidentity%2Fsign-in%2Fandroid%2Fsign-in%3Fconfigured%3Dtrue&amp;cntlbl=Continue%20Adding%20Sign-In" target="_blank" rel="external">末将在此</a>）</li>
+<li>获取tokenId权限（其他权限也在这边）如下：<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GoogleSignInOptions googleSignInOptions = <span class="keyword">new</span> GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)</span><br><span class="line">                .requestIdToken(context.getString(R.string.server_client_id))</span><br><span class="line">                .requestEmail()</span><br><span class="line">                .build();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</blockquote>
+<p>以上就是<strong>Google+</strong>登录的重点，开始一直没有把那个配置文件当回事，重要的事儿说三遍：一定要记住，json文件，json文件，json文件！</p>
+<h4 id="2_分享">2  分享</h4><p>分享其实没什么说的，其实有时候偷懒可以用上面说的<a href="http://www.mob.com/#/" target="_blank" rel="external">ShareSDK</a>，有些人说这个坑，不过的确比较广泛地支持了国内外主流的分享，还是算可以的了，只要自己注意一些规范和用法，有些坑可以自己去填的，笔者算是和ShareSDK打过很多次交道的人了，和里面的android技术支持平台的几个客服支持都比较熟了。。</p>
+<p>下面我拿<strong>Facebook</strong>说一下<br><strong>Facebook</strong>的分享（<a href="https://developers.facebook.com/docs/sharing/android" target="_blank" rel="external">末将在此</a>）有些与众不同，因为他是不能传递text这个字段的，它的分享只有三种：</p>
+<blockquote>
+<ul>
+<li>Links</li>
+<li>Photos</li>
+<li>Videos</li>
+</ul>
+</blockquote>
+<p>因为由于后面两种的局限性，所以一般就首选<strong>Links</strong>，顾名思义，就是把title, text, url都传入到一个对象里面，然后<strong>Facebook</strong>给你打包一个link发出去，，而<strong>Facebook</strong>比较牛的是可以自动去找出你分享的url里面的图片，然后显示在分享link的链接上，不过有个坑要注意，因为<strong>Facebook</strong>对url的“合法性”把控特别严厉，所以有时候你分享的图片url还是生成的url，会分享不出去，说不合法，这个<strong>Facebook</strong>专门有一个检测的工具（这个忘了地方了，到时候大家可以自己去查查。。）</p>
+<p><a href="http://www.mob.com/#/" target="_blank" rel="external">ShareSDK</a>的<strong>Facebook</strong>只能网页分享（即不能客户端分享，就是即使检测到你手机上装有客户端，也只会调用网页分享），不过感觉略屌的是<a href="http://www.mob.com/#/" target="_blank" rel="external">ShareSDK</a>的<strong>Facebook</strong>分享可以直接传入分享文本，而不需要将其放入<strong>Links</strong>的url里面，问了那边技术怎么做到的，没给我说😢</p>
+<p>自己闲暇之余也抽空写了一个用<a href="http://www.mob.com/#/" target="_blank" rel="external">ShareSDK</a>来第三方登录和分享的<a href="https://github.com/KevinRoy/ShareSdkDemo" target="_blank" rel="external">ShareSdkDemo</a></p>
+<h4 id="3_推送">3  推送</h4><p>推送方面如果自己来写的话，不管从时间或者成本来算都是比较大的，所以国内里面用过最多的是JPush和个推，米推等等，但是开头也说过我们的应用是国外的，所以得找一个“internationalization”一点的推送：<strong>GCM（Google Cloud Message）</strong>(<a href="https://developers.google.com/cloud-messaging/" target="_blank" rel="external">末将在此</a>)</p>
+<p>其实用法还好，因为又是google的东西，所以要经过上面<strong>Google Plus</strong>登录的那几个步骤，只是也要涉及到json文件<code>configuration file</code>，如果用的同一个包名和应用名，里面其实是可以并列开启几个服务的，所以不影响之前的json文件，到时候覆盖即可。</p>
+<p><strong>GCM</strong>这些github上面都有google的sample，可以自行去搜搜，但是有个问题一定要记住，因为做过推送的人都知道，推送有“<strong>通道</strong>”这个概念，而在<strong>GCM</strong> 里面叫做<strong>“topics”</strong>,而且：</p>
+<blockquote>
+<p> <strong>GCM 的通道只能以“/topics/”作为根目录且后面不能再出现其他目录</strong><br>比如：我给你评论推送只能是 <strong>“/topics/message-commit”</strong><br>而不能是<strong>“/topics/message/commit”</strong>或者<strong>“/message/commit”</strong></p>
+</blockquote>
+<p>以上是最近使用第三方的几个小总结，当然始终记住，总结永远只是手段而不是目的。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>有时候我们开发，可能会遇到一些系统化的难题，会去请一些第三方的来帮忙，调用他们的api，导入他们的SDK等等，由于我司的app是针对海外市场的，所以有些登录，分享，推送都要用到国外的第三方相关。这里小谈一下自己遇到的一些问题</p>]]>
+    
+    </summary>
+    
+      <category term="Android" scheme="http://www.baidu.com/tags/Android/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[当北京onTouch遇上西雅图onClick]]></title>
     <link href="http://www.baidu.com/2015/12/09/%E5%BD%93%E5%8C%97%E4%BA%AConTouch%E9%81%87%E4%B8%8A%E8%A5%BF%E9%9B%85%E5%9B%BEonClick/"/>
     <id>http://www.baidu.com/2015/12/09/当北京onTouch遇上西雅图onClick/</id>
     <published>2015-12-08T16:41:50.000Z</published>
-    <updated>2015-12-08T16:49:09.000Z</updated>
+    <updated>2015-12-19T10:39:34.000Z</updated>
     <content type="html"><![CDATA[<p>开门见山，这是几年前做的一个按钮，如图</p>
 <p><img src="http://static.oschina.net/uploads/space/2014/0126/140439_K76j_252749.png" alt="cmd-markdown-logo"></p>
+<a id="more"></a>
 <p> 好不容易把效果实现了，但是后面发现了一个问题，因为这个按钮是可以滑动或者点击的，滑动倒是无所谓，down——move——up 就可以了，但是点击的时候不但会执行点击操作，也会执行down和up的动作，就冲突了，开始还自己乱搞一气，想试图谋杀onTouch，但是onClick不答应，死死拦住我说，说要想杀onTouch，必须从它尸体上踏过去。<br>然后搜了搜，觉得有个不是办法的办法还是不错的，就是判断down的时候以及up的时候两者的x的变化，如果没有变化，就暂定为一次onclick点击事件</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> action = event.getAction();</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> moveX = (<span class="keyword">int</span>)event.getX();</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> scape = moveX - firstX;</span><br><span class="line">        <span class="keyword">switch</span> (action) &#123;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_DOWN:</span><br><span class="line">            firstX = (<span class="keyword">int</span>) event.getX();<span class="comment">//按下的时候开始的x的位置</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_MOVE:</span><br><span class="line">            <span class="keyword">if</span> (isMove) &#123;</span><br><span class="line">                move(scape);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_CANCEL:</span><br><span class="line">             </span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_UP:</span><br><span class="line">            secondX = (<span class="keyword">int</span>)event.getX();<span class="comment">//up的时候x的位置</span></span><br><span class="line">            <span class="keyword">int</span> distance = secondX - firstX;</span><br><span class="line">            <span class="keyword">if</span> (distance == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">//当没有变化的时候什么都不做</span></span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//执行move滑动后的操作</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> action = event.getAction();</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> moveX = (<span class="keyword">int</span>)event.getX();</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> scape = moveX - firstX;</span><br><span class="line">        <span class="keyword">switch</span> (action) &#123;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_DOWN:</span><br><span class="line">            firstX = (<span class="keyword">int</span>) event.getX();<span class="comment">//按下的时候开始的x的位置</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_MOVE:</span><br><span class="line">            <span class="keyword">if</span> (isMove) &#123;</span><br><span class="line">                move(scape);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_CANCEL:</span><br><span class="line"></span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_UP:</span><br><span class="line">            secondX = (<span class="keyword">int</span>)event.getX();<span class="comment">//up的时候x的位置</span></span><br><span class="line">            <span class="keyword">int</span> distance = secondX - firstX;</span><br><span class="line">            <span class="keyword">if</span> (distance == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">//当没有变化的时候什么都不做</span></span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//执行move滑动后的操作</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>欧了~</p>
 <p>写在后面：这是很早之前自己总结的一片博客，再次发出来一来是所谓开个张吧，二来是要告诫自己三件事儿，多总结，多总结，以及多总结。</p>
 ]]></content>
     <summary type="html">
     <![CDATA[<p>开门见山，这是几年前做的一个按钮，如图</p>
-<p><img src="http://static.oschina.net/uploads/space/2014/0126/140439_K76j_252749.png" alt="cmd-markdown-logo"></]]>
+<p><img src="http://static.oschina.net/uploads/space/2014/0126/140439_K76j_252749.png" alt="cmd-markdown-logo"></p>]]>
+    
     </summary>
     
       <category term="Android" scheme="http://www.baidu.com/tags/Android/"/>

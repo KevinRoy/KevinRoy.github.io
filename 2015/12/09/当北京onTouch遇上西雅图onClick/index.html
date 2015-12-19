@@ -5,23 +5,17 @@
   
   <title>当北京onTouch遇上西雅图onClick | 有时放纵</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="开门见山，这是几年前做的一个按钮，如图
-
- 好不容易把效果实现了，但是后面发现了一个问题，因为这个按钮是可以滑动或者点击的，滑动倒是无所谓，down——move——up 就可以了，但是点击的时候不但会执行点击操作，也会执行down和up的动作，就冲突了，开始还自己乱搞一气，想试图谋杀onTouch，但是onClick不答应，死死拦住我说，说要想杀onTouch，必须从它尸体上踏过去。然后搜了搜，觉">
+  <meta name="description" content="开门见山，这是几年前做的一个按钮，如图">
 <meta property="og:type" content="article">
 <meta property="og:title" content="当北京onTouch遇上西雅图onClick">
 <meta property="og:url" content="http://www.baidu.com/2015/12/09/当北京onTouch遇上西雅图onClick/index.html">
 <meta property="og:site_name" content="有时放纵">
-<meta property="og:description" content="开门见山，这是几年前做的一个按钮，如图
-
- 好不容易把效果实现了，但是后面发现了一个问题，因为这个按钮是可以滑动或者点击的，滑动倒是无所谓，down——move——up 就可以了，但是点击的时候不但会执行点击操作，也会执行down和up的动作，就冲突了，开始还自己乱搞一气，想试图谋杀onTouch，但是onClick不答应，死死拦住我说，说要想杀onTouch，必须从它尸体上踏过去。然后搜了搜，觉">
+<meta property="og:description" content="开门见山，这是几年前做的一个按钮，如图">
 <meta property="og:image" content="http://static.oschina.net/uploads/space/2014/0126/140439_K76j_252749.png">
-<meta property="og:updated_time" content="2015-12-08T16:49:09.000Z">
+<meta property="og:updated_time" content="2015-12-19T10:39:34.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="当北京onTouch遇上西雅图onClick">
-<meta name="twitter:description" content="开门见山，这是几年前做的一个按钮，如图
-
- 好不容易把效果实现了，但是后面发现了一个问题，因为这个按钮是可以滑动或者点击的，滑动倒是无所谓，down——move——up 就可以了，但是点击的时候不但会执行点击操作，也会执行down和up的动作，就冲突了，开始还自己乱搞一气，想试图谋杀onTouch，但是onClick不答应，死死拦住我说，说要想杀onTouch，必须从它尸体上踏过去。然后搜了搜，觉">
+<meta name="twitter:description" content="开门见山，这是几年前做的一个按钮，如图">
   
     <link rel="alternative" href="/atom.xml" title="有时放纵" type="application/atom+xml">
   
@@ -118,7 +112,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/文章/" style="font-size: 10px;">文章</a>
+						<a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/文章/" style="font-size: 10px;">文章</a>
 					</div>
 				</section>
 				
@@ -233,8 +227,9 @@
       
         <p>开门见山，这是几年前做的一个按钮，如图</p>
 <p><img src="http://static.oschina.net/uploads/space/2014/0126/140439_K76j_252749.png" alt="cmd-markdown-logo"></p>
+<a id="more"></a>
 <p> 好不容易把效果实现了，但是后面发现了一个问题，因为这个按钮是可以滑动或者点击的，滑动倒是无所谓，down——move——up 就可以了，但是点击的时候不但会执行点击操作，也会执行down和up的动作，就冲突了，开始还自己乱搞一气，想试图谋杀onTouch，但是onClick不答应，死死拦住我说，说要想杀onTouch，必须从它尸体上踏过去。<br>然后搜了搜，觉得有个不是办法的办法还是不错的，就是判断down的时候以及up的时候两者的x的变化，如果没有变化，就暂定为一次onclick点击事件</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> action = event.getAction();</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> moveX = (<span class="keyword">int</span>)event.getX();</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> scape = moveX - firstX;</span><br><span class="line">        <span class="keyword">switch</span> (action) &#123;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_DOWN:</span><br><span class="line">            firstX = (<span class="keyword">int</span>) event.getX();<span class="comment">//按下的时候开始的x的位置</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_MOVE:</span><br><span class="line">            <span class="keyword">if</span> (isMove) &#123;</span><br><span class="line">                move(scape);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_CANCEL:</span><br><span class="line">             </span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_UP:</span><br><span class="line">            secondX = (<span class="keyword">int</span>)event.getX();<span class="comment">//up的时候x的位置</span></span><br><span class="line">            <span class="keyword">int</span> distance = secondX - firstX;</span><br><span class="line">            <span class="keyword">if</span> (distance == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">//当没有变化的时候什么都不做</span></span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//执行move滑动后的操作</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> action = event.getAction();</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> moveX = (<span class="keyword">int</span>)event.getX();</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> scape = moveX - firstX;</span><br><span class="line">        <span class="keyword">switch</span> (action) &#123;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_DOWN:</span><br><span class="line">            firstX = (<span class="keyword">int</span>) event.getX();<span class="comment">//按下的时候开始的x的位置</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_MOVE:</span><br><span class="line">            <span class="keyword">if</span> (isMove) &#123;</span><br><span class="line">                move(scape);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_CANCEL:</span><br><span class="line"></span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_UP:</span><br><span class="line">            secondX = (<span class="keyword">int</span>)event.getX();<span class="comment">//up的时候x的位置</span></span><br><span class="line">            <span class="keyword">int</span> distance = secondX - firstX;</span><br><span class="line">            <span class="keyword">if</span> (distance == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">//当没有变化的时候什么都不做</span></span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//执行move滑动后的操作</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>欧了~</p>
 <p>写在后面：这是很早之前自己总结的一片博客，再次发出来一来是所谓开个张吧，二来是要告诫自己三件事儿，多总结，多总结，以及多总结。</p>
 
@@ -245,6 +240,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/2015/12/19/蜀将何在/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          蜀将何在(第三方登录和分享相关和gcm)
+        
+      </div>
+    </a>
   
   
     <a href="/2015/12/04/写在西元前/" id="article-nav-older" class="article-nav-link-wrap">
