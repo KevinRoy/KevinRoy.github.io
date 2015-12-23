@@ -5,16 +5,31 @@
   
   <title>蜀将何在(第三方登录和分享相关和gcm) | 有时放纵</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="有时候我们开发，可能会遇到一些系统化的难题，会去请一些第三方的来帮忙，调用他们的api，导入他们的SDK等等，由于我司的app是针对海外市场的，所以有些登录，分享，推送都要用到国外的第三方相关。这里小谈一下自己遇到的一些问题">
+  <meta name="description" content="有时候我们开发，可能会遇到一些系统化的难题，会去请一些第三方的来帮忙，调用他们的api，导入他们的SDK等等，由于我司的app是针对海外市场的，所以有些登录，分享，推送都要用到国外的第三方相关。这里小谈一下自己遇到的一些问题
+1  登录这里说说自己遇到的一些问题
+
+
+Facebook+
+Google+">
 <meta property="og:type" content="article">
 <meta property="og:title" content="蜀将何在(第三方登录和分享相关和gcm)">
 <meta property="og:url" content="http://www.baidu.com/2015/12/19/蜀将何在/index.html">
 <meta property="og:site_name" content="有时放纵">
-<meta property="og:description" content="有时候我们开发，可能会遇到一些系统化的难题，会去请一些第三方的来帮忙，调用他们的api，导入他们的SDK等等，由于我司的app是针对海外市场的，所以有些登录，分享，推送都要用到国外的第三方相关。这里小谈一下自己遇到的一些问题">
-<meta property="og:updated_time" content="2015-12-19T10:41:37.000Z">
+<meta property="og:description" content="有时候我们开发，可能会遇到一些系统化的难题，会去请一些第三方的来帮忙，调用他们的api，导入他们的SDK等等，由于我司的app是针对海外市场的，所以有些登录，分享，推送都要用到国外的第三方相关。这里小谈一下自己遇到的一些问题
+1  登录这里说说自己遇到的一些问题
+
+
+Facebook+
+Google+">
+<meta property="og:updated_time" content="2015-12-23T02:52:29.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="蜀将何在(第三方登录和分享相关和gcm)">
-<meta name="twitter:description" content="有时候我们开发，可能会遇到一些系统化的难题，会去请一些第三方的来帮忙，调用他们的api，导入他们的SDK等等，由于我司的app是针对海外市场的，所以有些登录，分享，推送都要用到国外的第三方相关。这里小谈一下自己遇到的一些问题">
+<meta name="twitter:description" content="有时候我们开发，可能会遇到一些系统化的难题，会去请一些第三方的来帮忙，调用他们的api，导入他们的SDK等等，由于我司的app是针对海外市场的，所以有些登录，分享，推送都要用到国外的第三方相关。这里小谈一下自己遇到的一些问题
+1  登录这里说说自己遇到的一些问题
+
+
+Facebook+
+Google+">
   
     <link rel="alternative" href="/atom.xml" title="有时放纵" type="application/atom+xml">
   
@@ -225,7 +240,6 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>有时候我们开发，可能会遇到一些系统化的难题，会去请一些第三方的来帮忙，调用他们的api，导入他们的SDK等等，由于我司的app是针对海外市场的，所以有些登录，分享，推送都要用到国外的第三方相关。这里小谈一下自己遇到的一些问题</p>
-<a id="more"></a>
 <h4 id="1_登录">1  登录</h4><p>这里说说自己遇到的一些问题</p>
 <blockquote>
 <ul>
@@ -233,6 +247,7 @@
 <li>Google+</li>
 </ul>
 </blockquote>
+<a id="more"></a>
 <p><strong>Facebook</strong>以前的app有老版本，但是最新的都已经更新了很大了，故决定重新撸一个。<strong>Facebook</strong>由于一些appId，token，权限，包名等等之类的，都已经申请好了，所以这些不用担心，顿时心里感觉轻松不少，<strong>Facebook</strong>的登录相对简单一点，到时候直接去请CallbackManager（<a href="https://developers.facebook.com/docs/facebook-login/android" target="_blank" rel="external">末将在此</a>）这员大将就可以搞定一切。只是注意一下登录需要开通的权限即可（<a href="https://developers.facebook.com/docs/facebook-login/android/permissions" target="_blank" rel="external">末将在此</a>）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LoginManager.getInstance().logInWithReadPermissions(<span class="keyword">this</span>, Arrays.asList(<span class="string">"public_profile"</span>, <span class="string">"user_friends"</span>));</span><br></pre></td></tr></table></figure></p>
 <p><strong>Google+</strong>就有些少许麻烦了，其实如果你不需要tokenId的话倒可以直接跑demo，<a href="http://www.mob.com/#/" target="_blank" rel="external">ShareSDK</a>都可以获取你需要的一些基本登录信息，但是如果服务器这边要根据你的登录tokenId去做一些操作，这样就不行，所以如果要拿TokenId，准备工作就比较繁琐(<a href="https://developers.google.com/identity/sign-in/android/start-integrating" target="_blank" rel="external">末将在此</a>），主要分下面几步：</p>
 <blockquote>

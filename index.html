@@ -215,6 +215,13 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>有时候我们开发，可能会遇到一些系统化的难题，会去请一些第三方的来帮忙，调用他们的api，导入他们的SDK等等，由于我司的app是针对海外市场的，所以有些登录，分享，推送都要用到国外的第三方相关。这里小谈一下自己遇到的一些问题</p>
+<h4 id="1_登录">1  登录</h4><p>这里说说自己遇到的一些问题</p>
+<blockquote>
+<ul>
+<li>Facebook+</li>
+<li>Google+</li>
+</ul>
+</blockquote>
       
     </div>
     
@@ -274,6 +281,7 @@
       
         <p>开门见山，这是几年前做的一个按钮，如图</p>
 <p><img src="http://static.oschina.net/uploads/space/2014/0126/140439_K76j_252749.png" alt="cmd-markdown-logo"></p>
+<p> 好不容易把效果实现了，但是后面发现了一个问题，因为这个按钮是可以滑动或者点击的，滑动倒是无所谓，down——move——up 就可以了，但是点击的时候不但会执行点击操作，也会执行down和up的动作，就冲突了，开始还自己乱搞一气，想试图谋杀onTouch，但是onClick不答应，死死拦住我说，说要想杀onTouch，必须从它尸体上踏过去。</p>
       
     </div>
     
