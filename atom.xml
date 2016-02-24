@@ -4,7 +4,7 @@
   <subtitle><![CDATA[幽默是生活的境界，你就是哭，都要哭得有幽默感一点]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.baidu.com/"/>
-  <updated>2015-12-23T02:52:29.000Z</updated>
+  <updated>2016-02-24T18:19:37.000Z</updated>
   <id>http://www.baidu.com/</id>
   
   <author>
@@ -13,6 +13,55 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[关于android汉字转化拼音的一个说明]]></title>
+    <link href="http://www.baidu.com/2016/02/25/%E5%85%B3%E4%BA%8Eandroid%E6%B1%89%E5%AD%97%E8%BD%AC%E5%8C%96%E6%8B%BC%E9%9F%B3%E7%9A%84%E4%B8%80%E4%B8%AA%E8%AF%B4%E6%98%8E/"/>
+    <id>http://www.baidu.com/2016/02/25/关于android汉字转化拼音的一个说明/</id>
+    <published>2016-02-24T17:48:47.000Z</published>
+    <updated>2016-02-24T18:19:37.000Z</updated>
+    <content type="html"><![CDATA[<p>这段时间做了一个侧边栏根据字母显示的ListView，不想每次都去写一个，所以就自己草草封装了一个不完全版本的<a href="https://github.com/KevinRoy/KGLetterSideBar" target="_blank" rel="external"><strong>KGLetterSideBar</strong></a>，因为之前做过的要么是英语，要么有自己的拼音库，这让我太不方便了，于是乎我想看看是不是有一种把汉字的拼音拿到的库之类的啥，搜了下，一般有两种做法：</p>
+<blockquote>
+<ul>
+<li>HanziToPinyin</li>
+<li>Pinyin4j</li>
+</ul>
+</blockquote>
+<a id="more"></a>
+<p>这两个有什么区别大家可以去搜索下，挺多的，不过好像很多人推荐<strong>HanziToPinyin</strong>，因为<strong>Pinyin4j</strong>貌似不支持多音字</p>
+<p>我在这里用了<strong>HanziToPinyin</strong>，其实感觉用法挺简单的，但是我怎么都转换不成功，不知道是为什么，后面调试了一下，发现了这句关键代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> HanziToPinyin <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (HanziToPinyin.class) &#123;</span><br><span class="line">            <span class="keyword">if</span> (sInstance != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> sInstance;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Check if zh_CN collation data is available</span></span><br><span class="line">            <span class="keyword">final</span> Locale locale[] = Collator.getAvailableLocales();</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; locale.length; i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (locale[i].equals(Locale.CHINA)) &#123;</span><br><span class="line">                    <span class="comment">// Do self validation just once.</span></span><br><span class="line">                    <span class="keyword">if</span> (DEBUG) &#123;</span><br><span class="line">                        Log.d(TAG, <span class="string">"Self validation. Result: "</span> + doSelfValidation());</span><br><span class="line">                    &#125;</span><br><span class="line">                    sInstance = <span class="keyword">new</span> HanziToPinyin(<span class="keyword">true</span>);</span><br><span class="line">                    <span class="keyword">return</span> sInstance;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            Log.w(TAG, <span class="string">"There is no Chinese collator, HanziToPinyin is disabled"</span>);</span><br><span class="line">            sInstance = <span class="keyword">new</span> HanziToPinyin(<span class="keyword">false</span>);</span><br><span class="line">            <span class="keyword">return</span> sInstance;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>其中的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (locale[i].equals(Locale.CHINA))</span><br></pre></td></tr></table></figure>
+<p>始终为false，百思不得其解，后面在网上查了不少资料才知道，因为Collator本来就是去调的icu (International Components for Unicode)<br>我们可以通过Collator.getAvailableLocales()来查看有没有支持的语言<br>但是每个手机又不尽相同, 想说爱你不容易啊<br>先看看自带只能获取的locale<br>和中文相关的就一下这些:</p>
+<blockquote>
+<ul>
+<li>zh</li>
+<li>zh_HANS 简体中文</li>
+<li>zh_HANS_CN 大陆简体中文</li>
+<li>zh_HANS_SG 新加坡简体中文</li>
+<li>zh_HANT 繁体中文</li>
+<li>zh_HANT_HK 香港繁体中文</li>
+<li>zh_HANT_MO 澳门繁体中文</li>
+<li>zh_HANT_TW 台湾繁体中文</li>
+</ul>
+</blockquote>
+<p>目前只有这几款(HANS 简体  HANT 繁体)<br>难怪不行，而且我看有人说各个手机可能会有差异，所以我在这里改了一下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isChinaCollator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Locale[] localeArray = Collator.getAvailableLocales();</span><br><span class="line">        <span class="keyword">if</span> (localeArray.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            List&lt;Locale&gt; locales = Arrays.asList(localeArray);</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; locales.size(); i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (Locale.CHINA.equals(locales.get(i))) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (isAdaptationLocale()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isAdaptationLocale</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span> isAdaptation = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">if</span> (Locale.getDefault().equals(Locale.CHINA)) &#123;</span><br><span class="line">            isAdaptation = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> isAdaptation;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>因为我手机Nexus5获取<strong>Locale.getDefault()</strong>的值为<strong>zh_CN</strong>，而这个是上面<strong>locale[]</strong>列表里面没有的，所以相当于在<strong>isAdaptationLocale</strong>方法里面做了一个小小的适配，以后对其他手机的不同我也会及时更新</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>这段时间做了一个侧边栏根据字母显示的ListView，不想每次都去写一个，所以就自己草草封装了一个不完全版本的<a href="https://github.com/KevinRoy/KGLetterSideBar"><strong>KGLetterSideBar</strong></a>，因为之前做过的要么是英语，要么有自己的拼音库，这让我太不方便了，于是乎我想看看是不是有一种把汉字的拼音拿到的库之类的啥，搜了下，一般有两种做法：</p>
+<blockquote>
+<ul>
+<li>HanziToPinyin</li>
+<li>Pinyin4j</li>
+</ul>
+</blockquote>]]>
+    
+    </summary>
+    
+      <category term="Android" scheme="http://www.baidu.com/tags/Android/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[蜀将何在(第三方登录和分享相关和gcm)]]></title>
