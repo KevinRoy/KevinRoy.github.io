@@ -4,7 +4,7 @@
   <subtitle><![CDATA[幽默是生活的境界，你就是哭，都要哭得有幽默感一点]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.baidu.com/"/>
-  <updated>2016-02-24T18:19:37.000Z</updated>
+  <updated>2016-05-24T17:05:37.000Z</updated>
   <id>http://www.baidu.com/</id>
   
   <author>
@@ -13,6 +13,36 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[人生若只如初见脚本]]></title>
+    <link href="http://www.baidu.com/2016/05/25/%E4%BA%BA%E7%94%9F%E8%8B%A5%E5%8F%AA%E5%A6%82%E5%88%9D%E8%A7%81%E8%84%9A%E6%9C%AC/"/>
+    <id>http://www.baidu.com/2016/05/25/人生若只如初见脚本/</id>
+    <published>2016-05-24T17:02:30.000Z</published>
+    <updated>2016-05-24T17:05:37.000Z</updated>
+    <content type="html"><![CDATA[<p>有时候你是否想隐藏一些文件（你懂的…），但是反复去点击很麻烦，比如Mac，你不但要去执行一次<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">defaults write com.apple.finder AppleShowAllFiles TRUE</span><br><span class="line">defaults write com.apple.finder AppleShowAllFiles FALSE</span><br></pre></td></tr></table></figure></p>
+<p>而且还有一个比较蛋痛的地方，执行了这句话后，必须关闭重启<strong>Finder</strong>才能有效果，因为<strong>Finder</strong>默认是手动关不了的，当然后面开启就行了，我一段时间都是通过<strong>活动监视器</strong>去关闭的，囧<br><a id="more"></a><br>后面我想到可以通过一句命令行来解决这个事儿，那就不得不用到shell脚本了，其实之前基本没咋用过（惭愧），但是学习这个事儿，没有早晚，所以东凑西拼了一个很简单的脚本</p>
+<p>工具用的是大名鼎鼎的<strong>Sublime</strong>，挺好用的，写写脚本，JS啊，支持补全和各种插件，这些等我以后去开采吧</p>
+<p>打开 <strong>Sublime</strong> 开头写上一句<em>#!/bin/sh</em>代表整个文件是脚本，算是一个不成文的共识吧，有时候是不是感觉输入了命令行，叫你选择<em>yes</em>或者是<em>no</em>，这里也可以加上一句<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo -n <span class="string">"AppleShowAllFiles ? (y/n)"</span></span><br></pre></td></tr></table></figure></p>
+<p>是否显示全部的文件，然后读取输入<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">read is_allow</span><br></pre></td></tr></table></figure></p>
+<p><strong>Tips：注意这句貌似必须紧挨着上面，否则可能获取不到值</strong><br>紧接着判断变量<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [[ $is_allow = <span class="string">"y"</span> ]]; then</span><br><span class="line">	defaults write com.apple.finder AppleShowAllFiles TRUE</span><br><span class="line">fi</span><br></pre></td></tr></table></figure></p>
+<p>然后为<strong>is_allow</strong>为<strong>“n”</strong>也是一样的情况，完了之后我感觉还不错，但是还是得每次都要重启一下<strong>Finder</strong><br>所以可以先执行<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#defaults write com.apple.finder QuitMenuItem -bool YES</span><br></pre></td></tr></table></figure></p>
+<p>开启，然后再执行<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">killall Finder</span><br></pre></td></tr></table></figure></p>
+<p>将其写到里面去，这样就可以让它自动重新开启和执行<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [[ $is_allow = <span class="string">"y"</span> ]]; then</span><br><span class="line">	defaults write com.apple.finder AppleShowAllFiles TRUE</span><br><span class="line">	killall Finder</span><br><span class="line">fi</span><br></pre></td></tr></table></figure></p>
+<p>感觉效果不错，不过呢，我把.sh文件保存到某一个文件夹的，如果每次都要去执行的话，都要把绝对路径加上去，太麻烦，其实可以加到<strong>PATH</strong>路径里面去<br>具体的方式网上很多，我就不一一举例了，就像现在这个我取名为KGShowAll，我在我的终端机输入：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">luozhengdeMacBook-Pro:~ kevin$ KGShowAll.sh</span><br><span class="line">-n AppleShowAllFiles ? (y/n)</span><br><span class="line">y</span><br><span class="line">luozhengdeMacBook-Pro:~ kevin$</span><br></pre></td></tr></table></figure></p>
+<p>搞定</p>
+<p>我当然很清楚这很简单，也很基础，不过只要喜欢，自己感兴趣，说不定会挖到很多好玩的东西</p>
+<p>人生若只如初见 打死也不吃泡面</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>有时候你是否想隐藏一些文件（你懂的…），但是反复去点击很麻烦，比如Mac，你不但要去执行一次<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">defaults write com.apple.finder AppleShowAllFiles TRUE</span><br><span class="line">defaults write com.apple.finder AppleShowAllFiles FALSE</span><br></pre></td></tr></table></figure></p>
+<p>而且还有一个比较蛋痛的地方，执行了这句话后，必须关闭重启<strong>Finder</strong>才能有效果，因为<strong>Finder</strong>默认是手动关不了的，当然后面开启就行了，我一段时间都是通过<strong>活动监视器</strong>去关闭的，囧<br>]]>
+    
+    </summary>
+    
+      <category term="Shell" scheme="http://www.baidu.com/tags/Shell/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[关于android汉字转化拼音的一个说明]]></title>
