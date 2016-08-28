@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Ooooooh My Zsh | 有时放纵</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="这两天看到干货群讨论了一个快速好玩的Shell，号称史上最强的”终极Shell”-zsh
+当即去搜索了一下，开篇几乎都先说zsh多么多么牛掰，然后都是让你把zsh放一放，说配置有多么多么复杂，然后就把oh-my-zsh抛出来了
+oh-my-zsh据说这个作者哥们是感觉zsh配置起来太麻烦，就自己写了一套，让配置0成本，造福了很多程序员">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ooooooh My Zsh">
+<meta property="og:url" content="http://www.baidu.com/2016/08/28/Ooooooh-My-Zsh/index.html">
+<meta property="og:site_name" content="有时放纵">
+<meta property="og:description" content="这两天看到干货群讨论了一个快速好玩的Shell，号称史上最强的”终极Shell”-zsh
+当即去搜索了一下，开篇几乎都先说zsh多么多么牛掰，然后都是让你把zsh放一放，说配置有多么多么复杂，然后就把oh-my-zsh抛出来了
+oh-my-zsh据说这个作者哥们是感觉zsh配置起来太麻烦，就自己写了一套，让配置0成本，造福了很多程序员">
+<meta property="og:updated_time" content="2016-08-28T03:38:16.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ooooooh My Zsh">
+<meta name="twitter:description" content="这两天看到干货群讨论了一个快速好玩的Shell，号称史上最强的”终极Shell”-zsh
+当即去搜索了一下，开篇几乎都先说zsh多么多么牛掰，然后都是让你把zsh放一放，说配置有多么多么复杂，然后就把oh-my-zsh抛出来了
+oh-my-zsh据说这个作者哥们是感觉zsh配置起来太麻烦，就自己写了一套，让配置0成本，造福了很多程序员">
+  
+    <link rel="alternative" href="/atom.xml" title="有时放纵" type="application/atom+xml">
+  
+  
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <!-- <link rel="icon" href="/favicon.png"> -->
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="https://avatars0.githubusercontent.com/u/2009346?v=3&amp;amp;s=460" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Kevin Roy</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">幽默是生活的境界，你就是哭，都要哭得有幽默感一点</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						<div class="icon-wrap icon-link hide" data-idx="2">
+							<div class="loopback_l"></div>
+							<div class="loopback_r"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						<li>友情链接</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/KevinRoy" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/kevingracie?wvr=5&c=spr_web_sq_baidub_weibo_t001" title="weibo">weibo</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Shell/" style="font-size: 10px;">Shell</a> <a href="/tags/文章/" style="font-size: 10px;">文章</a>
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://gank.io/">干货集中营</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://andrewliu.in/">小牛牛</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://blog.daimajia.com/">肥皂家</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.bojinxiaozhu.com/">铂金小肥猪</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://iamwent.github.io/">小黄黄</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://drakeet.me/">小峰峰</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+				
+				<section class="switch-part switch-part4">
+				
+					<div id="js-aboutme">有时放纵</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Kevin Roy</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="https://avatars0.githubusercontent.com/u/2009346?v=3&amp;amp;s=460" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Kevin Roy</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">幽默是生活的境界，你就是哭，都要哭得有幽默感一点</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/KevinRoy" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/kevingracie?wvr=5&c=spr_web_sq_baidub_weibo_t001" title="weibo">weibo</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-Ooooooh-My-Zsh" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/08/28/Ooooooh-My-Zsh/" class="article-date">
+  	<time datetime="2016-08-27T16:09:05.000Z" itemprop="datePublished">2016-08-28</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Ooooooh My Zsh
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这两天看到干货群讨论了一个快速好玩的Shell，号称史上最强的”终极Shell”-zsh</p>
+<p>当即去搜索了一下，开篇几乎都先说zsh多么多么牛掰，然后都是让你把zsh放一放，说配置有多么多么复杂，然后就把<a href="https://github.com/robbyrussell/oh-my-zsh" target="_blank" rel="external">oh-my-zsh</a>抛出来了</p>
+<h2 id="oh-my-zsh">oh-my-zsh</h2><p>据说这个作者哥们是感觉zsh配置起来太麻烦，就自己写了一套，让配置0成本，造福了很多程序员</p>
+<a id="more"></a>
+<p>我用的是mac，所以我先说说mac的配置<br>不过在之前，可以先看看你的系统带有哪几种shell</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/shells</span><br></pre></td></tr></table></figure>
+<p>显示如下<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/bin/bash</span><br><span class="line">/bin/csh</span><br><span class="line">/bin/ksh</span><br><span class="line">/bin/sh</span><br><span class="line">/bin/tcsh</span><br><span class="line">/bin/zsh</span><br></pre></td></tr></table></figure></p>
+<p>最常见的肯定就是bash，而zsh也是自带<br>如果系统没有的话， mac用户可以（Windows用户就暂时没辙了…）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install zsh</span><br></pre></td></tr></table></figure></p>
+<p>然后接下来我们安装oh-my-zsh</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone git:<span class="comment">//github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh</span></span><br><span class="line">cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc</span><br></pre></td></tr></table></figure>
+<p>然后输入<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chsh -s /bin/zsh</span><br></pre></td></tr></table></figure></p>
+<p>切换一下shell的类型，重启一下就搞定了</p>
+<p>这里着重介绍一下oh-my-zsh两个特别方便的地方</p>
+<blockquote>
+<ul>
+<li>alias</li>
+<li>plugins</li>
+</ul>
+</blockquote>
+<h3 id="alias">alias</h3><p>关于什么是alias其实就是别名，让你打几个字母就可以代替一大串命令。<br>打开~/.zshrc文件<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">open ~/.zshrc</span><br></pre></td></tr></table></figure></p>
+<p>拉到最后会看到这么一句：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># Example aliases</span><br><span class="line"># alias zshconfig="mate ~/.zshrc"</span><br><span class="line"># alias ohmyzsh="mate ~/.oh-my-zsh"</span><br></pre></td></tr></table></figure></p>
+<p>然后可以在下面添加比如：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">alias gst=<span class="string">"git st"</span></span><br><span class="line">alias gadd=<span class="string">"git add ."</span></span><br><span class="line">alias gcommit=<span class="string">"git commit -am"</span></span><br></pre></td></tr></table></figure></p>
+<p>（tips：其实在命令行输入alias可以看下有些自定义或者你定义好的alias列表）</p>
+<h3 id="plugins">plugins</h3><p>oh-my-zsh支持很多插件，非常强大的功能，毫不夸张地说：这会让shell用起来飞起，可以自己到~/.oh-my-zsh/plugins自行查看<br>同样是打开打开~/.zshrc文件，你会找到这么一句话<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plugins=(git)</span><br></pre></td></tr></table></figure></p>
+<p>你还需要把你要的插件名写进去，用英文空格隔开，比如<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plugins=(git osx web-search autojump)</span><br></pre></td></tr></table></figure></p>
+<p>这里介绍两个比较出名好用的插件：</p>
+<h4 id="1_autojump">1 autojump</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install autojump</span><br></pre></td></tr></table></figure>
+<p>然后把autojump添加进去即可，它的基本用法是先cd一个路径文件名，下次你可以直接j这个文件的部分文件名，就会智能去定义这个路径，如果有几个相似的，还好列出来拱用户选择，连击tab就可以选择了。具体的用法大家可以在网上搜搜</p>
+<h4 id="2_web-search">2 web-search</h4><p>这个搜索很方便，在命令行输入<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baidu 有时放纵</span><br></pre></td></tr></table></figure></p>
+<p>或者<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">google 有时放纵</span><br></pre></td></tr></table></figure></p>
+<p>就会打开浏览器baidu或者google并且索引”有时放纵”这个索引<br>还有一大把控件，就等我们慢慢去探索，当然后面也可以自己写控件哦</p>
+<p>最后再加上<a href="https://www.iterm2.com/" target="_blank" rel="external">iTerm2</a> 比系统自带的终端强大很多，分屏搜索命令都很不错，这里不一一介绍了，可以去官网看看。</p>
+<p>oh-my-zsh还可以自己设置theme：<br>也在.zshrc文件里面<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZSH_THEME=<span class="string">"robbyrussell"</span></span><br></pre></td></tr></table></figure></p>
+<p>我草草把这一套搭建起来了，就已经感觉起飞了，不知道天空还有什么更神秘更好玩的东西呢？<br>Ooooooh My Zsh!!</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/05/25/人生若只如初见脚本/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">人生若只如初见脚本</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="Ooooooh-My-Zsh" data-title="Ooooooh My Zsh" data-url="http://www.baidu.com/2016/08/28/Ooooooh-My-Zsh/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 Kevin Roy
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>

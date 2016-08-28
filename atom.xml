@@ -4,7 +4,7 @@
   <subtitle><![CDATA[幽默是生活的境界，你就是哭，都要哭得有幽默感一点]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.baidu.com/"/>
-  <updated>2016-05-24T17:05:37.000Z</updated>
+  <updated>2016-08-28T03:38:16.000Z</updated>
   <id>http://www.baidu.com/</id>
   
   <author>
@@ -13,6 +13,56 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[Ooooooh My Zsh]]></title>
+    <link href="http://www.baidu.com/2016/08/28/Ooooooh-My-Zsh/"/>
+    <id>http://www.baidu.com/2016/08/28/Ooooooh-My-Zsh/</id>
+    <published>2016-08-27T16:09:05.000Z</published>
+    <updated>2016-08-28T03:38:16.000Z</updated>
+    <content type="html"><![CDATA[<p>这两天看到干货群讨论了一个快速好玩的Shell，号称史上最强的”终极Shell”-zsh</p>
+<p>当即去搜索了一下，开篇几乎都先说zsh多么多么牛掰，然后都是让你把zsh放一放，说配置有多么多么复杂，然后就把<a href="https://github.com/robbyrussell/oh-my-zsh" target="_blank" rel="external">oh-my-zsh</a>抛出来了</p>
+<h2 id="oh-my-zsh">oh-my-zsh</h2><p>据说这个作者哥们是感觉zsh配置起来太麻烦，就自己写了一套，让配置0成本，造福了很多程序员</p>
+<a id="more"></a>
+<p>我用的是mac，所以我先说说mac的配置<br>不过在之前，可以先看看你的系统带有哪几种shell</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/shells</span><br></pre></td></tr></table></figure>
+<p>显示如下<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/bin/bash</span><br><span class="line">/bin/csh</span><br><span class="line">/bin/ksh</span><br><span class="line">/bin/sh</span><br><span class="line">/bin/tcsh</span><br><span class="line">/bin/zsh</span><br></pre></td></tr></table></figure></p>
+<p>最常见的肯定就是bash，而zsh也是自带<br>如果系统没有的话， mac用户可以（Windows用户就暂时没辙了…）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install zsh</span><br></pre></td></tr></table></figure></p>
+<p>然后接下来我们安装oh-my-zsh</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone git:<span class="comment">//github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh</span></span><br><span class="line">cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc</span><br></pre></td></tr></table></figure>
+<p>然后输入<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chsh -s /bin/zsh</span><br></pre></td></tr></table></figure></p>
+<p>切换一下shell的类型，重启一下就搞定了</p>
+<p>这里着重介绍一下oh-my-zsh两个特别方便的地方</p>
+<blockquote>
+<ul>
+<li>alias</li>
+<li>plugins</li>
+</ul>
+</blockquote>
+<h3 id="alias">alias</h3><p>关于什么是alias其实就是别名，让你打几个字母就可以代替一大串命令。<br>打开~/.zshrc文件<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">open ~/.zshrc</span><br></pre></td></tr></table></figure></p>
+<p>拉到最后会看到这么一句：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># Example aliases</span><br><span class="line"># alias zshconfig="mate ~/.zshrc"</span><br><span class="line"># alias ohmyzsh="mate ~/.oh-my-zsh"</span><br></pre></td></tr></table></figure></p>
+<p>然后可以在下面添加比如：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">alias gst=<span class="string">"git st"</span></span><br><span class="line">alias gadd=<span class="string">"git add ."</span></span><br><span class="line">alias gcommit=<span class="string">"git commit -am"</span></span><br></pre></td></tr></table></figure></p>
+<p>（tips：其实在命令行输入alias可以看下有些自定义或者你定义好的alias列表）</p>
+<h3 id="plugins">plugins</h3><p>oh-my-zsh支持很多插件，非常强大的功能，毫不夸张地说：这会让shell用起来飞起，可以自己到~/.oh-my-zsh/plugins自行查看<br>同样是打开打开~/.zshrc文件，你会找到这么一句话<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plugins=(git)</span><br></pre></td></tr></table></figure></p>
+<p>你还需要把你要的插件名写进去，用英文空格隔开，比如<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plugins=(git osx web-search autojump)</span><br></pre></td></tr></table></figure></p>
+<p>这里介绍两个比较出名好用的插件：</p>
+<h4 id="1_autojump">1 autojump</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install autojump</span><br></pre></td></tr></table></figure>
+<p>然后把autojump添加进去即可，它的基本用法是先cd一个路径文件名，下次你可以直接j这个文件的部分文件名，就会智能去定义这个路径，如果有几个相似的，还好列出来拱用户选择，连击tab就可以选择了。具体的用法大家可以在网上搜搜</p>
+<h4 id="2_web-search">2 web-search</h4><p>这个搜索很方便，在命令行输入<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baidu 有时放纵</span><br></pre></td></tr></table></figure></p>
+<p>或者<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">google 有时放纵</span><br></pre></td></tr></table></figure></p>
+<p>就会打开浏览器baidu或者google并且索引”有时放纵”这个索引<br>还有一大把控件，就等我们慢慢去探索，当然后面也可以自己写控件哦</p>
+<p>最后再加上<a href="https://www.iterm2.com/" target="_blank" rel="external">iTerm2</a> 比系统自带的终端强大很多，分屏搜索命令都很不错，这里不一一介绍了，可以去官网看看。</p>
+<p>oh-my-zsh还可以自己设置theme：<br>也在.zshrc文件里面<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZSH_THEME=<span class="string">"robbyrussell"</span></span><br></pre></td></tr></table></figure></p>
+<p>我草草把这一套搭建起来了，就已经感觉起飞了，不知道天空还有什么更神秘更好玩的东西呢？<br>Ooooooh My Zsh!!</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>这两天看到干货群讨论了一个快速好玩的Shell，号称史上最强的”终极Shell”-zsh</p>
+<p>当即去搜索了一下，开篇几乎都先说zsh多么多么牛掰，然后都是让你把zsh放一放，说配置有多么多么复杂，然后就把<a href="https://github.com/robbyrussell/oh-my-zsh">oh-my-zsh</a>抛出来了</p>
+<h2 id="oh-my-zsh">oh-my-zsh</h2><p>据说这个作者哥们是感觉zsh配置起来太麻烦，就自己写了一套，让配置0成本，造福了很多程序员</p>]]>
+    
+    </summary>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[人生若只如初见脚本]]></title>
@@ -49,7 +99,7 @@
     <link href="http://www.baidu.com/2016/02/25/%E5%85%B3%E4%BA%8Eandroid%E6%B1%89%E5%AD%97%E8%BD%AC%E5%8C%96%E6%8B%BC%E9%9F%B3%E7%9A%84%E4%B8%80%E4%B8%AA%E8%AF%B4%E6%98%8E/"/>
     <id>http://www.baidu.com/2016/02/25/关于android汉字转化拼音的一个说明/</id>
     <published>2016-02-24T17:48:47.000Z</published>
-    <updated>2016-02-24T18:19:37.000Z</updated>
+    <updated>2016-05-24T17:05:16.000Z</updated>
     <content type="html"><![CDATA[<p>这段时间做了一个侧边栏根据字母显示的ListView，不想每次都去写一个，所以就自己草草封装了一个不完全版本的<a href="https://github.com/KevinRoy/KGLetterSideBar" target="_blank" rel="external"><strong>KGLetterSideBar</strong></a>，因为之前做过的要么是英语，要么有自己的拼音库，这让我太不方便了，于是乎我想看看是不是有一种把汉字的拼音拿到的库之类的啥，搜了下，一般有两种做法：</p>
 <blockquote>
 <ul>
