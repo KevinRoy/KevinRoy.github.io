@@ -4,7 +4,7 @@
   <subtitle><![CDATA[幽默是生活的境界，你就是哭，都要哭得有幽默感一点]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.baidu.com/"/>
-  <updated>2016-08-28T03:38:16.000Z</updated>
+  <updated>2016-08-28T03:41:07.000Z</updated>
   <id>http://www.baidu.com/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://www.baidu.com/2016/08/28/Ooooooh-My-Zsh/"/>
     <id>http://www.baidu.com/2016/08/28/Ooooooh-My-Zsh/</id>
     <published>2016-08-27T16:09:05.000Z</published>
-    <updated>2016-08-28T03:38:16.000Z</updated>
+    <updated>2016-08-28T03:41:07.000Z</updated>
     <content type="html"><![CDATA[<p>这两天看到干货群讨论了一个快速好玩的Shell，号称史上最强的”终极Shell”-zsh</p>
 <p>当即去搜索了一下，开篇几乎都先说zsh多么多么牛掰，然后都是让你把zsh放一放，说配置有多么多么复杂，然后就把<a href="https://github.com/robbyrussell/oh-my-zsh" target="_blank" rel="external">oh-my-zsh</a>抛出来了</p>
 <h2 id="oh-my-zsh">oh-my-zsh</h2><p>据说这个作者哥们是感觉zsh配置起来太麻烦，就自己写了一套，让配置0成本，造福了很多程序员</p>
@@ -61,6 +61,8 @@
 <h2 id="oh-my-zsh">oh-my-zsh</h2><p>据说这个作者哥们是感觉zsh配置起来太麻烦，就自己写了一套，让配置0成本，造福了很多程序员</p>]]>
     
     </summary>
+    
+      <category term="Shell" scheme="http://www.baidu.com/tags/Shell/"/>
     
   </entry>
   
