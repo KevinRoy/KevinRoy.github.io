@@ -1,0 +1,36 @@
+{
+  "steam": [
+    {
+      "name": "Counter-Strike 2",
+      "category": "Steam 更新",
+      "appid": 730
+    },
+    {
+      "name": "Dota 2",
+      "category": "Steam 更新",
+      "appid": 570
+    },
+    {
+      "name": "PUBG: BATTLEGROUNDS",
+      "category": "Steam 更新",
+      "appid": 578080
+    },
+    {
+      "name": "Apex Legends",
+      "category": "Steam 更新",
+      "appid": 1172470
+    },
+    {
+      "name": "ELDEN RING",
+      "category": "Steam 更新",
+      "appid": 1245620
+    }
+  ],
+  "gdelt": [
+    {
+      "name": "Global Gaming News",
+      "category": "行业新闻",
+      "query": "gaming"
+    }
+  ]
+}

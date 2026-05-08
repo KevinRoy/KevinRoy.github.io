@@ -184,6 +184,7 @@ function renderPage(items, errors) {
                   <ul>
                     <li><a class="nav-tab" href="/">IT</a></li>
                     <li><a class="nav-tab nav-tab-active" href="/finance/">金融</a></li>
+                    <li><a class="nav-tab" href="/game/">游戏</a></li>
                     <li><a class="nav-tab" href="/archives">归档</a></li>
                   </ul>
                 </nav>
@@ -199,6 +200,7 @@ function renderPage(items, errors) {
         <div class="section-tabs" aria-label="内容版块">
           <a class="section-tab" href="/">IT</a>
           <a class="section-tab section-tab-active" href="/finance/">金融</a>
+          <a class="section-tab" href="/game/">游戏</a>
         </div>
 
         <section class="finance-header">

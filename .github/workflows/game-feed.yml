@@ -1,0 +1,30 @@
+name: Update game feed
+
+on:
+  schedule:
+    - cron: "30 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-game-feed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build game page
+        run: node scripts/build-game-feed.js
+
+      - name: Commit game page
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update game feed"
+          file_pattern: "game/index.html"
