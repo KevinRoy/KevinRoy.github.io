@@ -1,5 +1,6 @@
 const fs = require("fs/promises");
 const path = require("path");
+const { translateItems } = require("./lib/translate");
 
 const ROOT = path.resolve(__dirname, "..");
 const FEEDS_PATH = path.join(ROOT, "data", "finance-feeds.json");
@@ -139,7 +140,7 @@ function groupItems(items) {
 function renderFinanceItems(items) {
   return items.map((item) => `
           <a class="finance-item" href="${escapeHtml(item.link)}" target="_blank" rel="noopener">
-            <span>${escapeHtml(item.title)}</span>
+            <span${item.originalTitle ? ` title="${escapeHtml(item.originalTitle)}"` : ""}>${escapeHtml(item.title)}</span>
             <time>${escapeHtml(formatDate(item.date))}</time>
           </a>`).join("");
 }
@@ -252,7 +253,7 @@ async function main() {
   });
 
   items.sort((a, b) => b.date - a.date);
-  const limited = items.slice(0, MAX_ITEMS);
+  const limited = await translateItems(items.slice(0, MAX_ITEMS), "finance");
 
   await fs.mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
   await fs.writeFile(OUTPUT_PATH, renderPage(limited, errors), "utf8");
