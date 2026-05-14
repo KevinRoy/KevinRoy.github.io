@@ -1,0 +1,77 @@
+{
+  "common": {
+    "pre": {
+      "Federal Reserve": "美联储",
+      "Federal Open Market Committee": "联邦公开市场委员会",
+      "FOMC": "FOMC",
+      "SEC": "美国证监会",
+      "CFTC": "美国商品期货交易委员会",
+      "IPO": "IPO",
+      "IPOs": "IPO",
+      "AI": "AI",
+      "Crypto Assets": "加密资产",
+      "stablecoins": "稳定币",
+      "Stablecoins": "稳定币"
+    },
+    "post": {
+      "美国证券交易委员会": "美国证监会",
+      "联邦储备委员会": "美联储",
+      "联邦储备银行": "美联储",
+      "联邦公开市场委员会": "FOMC",
+      "商品期货交易委员会": "美国商品期货交易委员会"
+    }
+  },
+  "finance": {
+    "pre": {
+      "Bowman": "鲍曼",
+      "Waller": "沃勒",
+      "Cook": "库克",
+      "Barr": "巴尔",
+      "Jefferson": "杰斐逊",
+      "Miran": "米兰",
+      "Monetary Policy": "货币政策",
+      "Financial Stability": "金融稳定"
+    },
+    "post": {
+      "Cook ，": "库克，",
+      "Bowman ，": "鲍曼，",
+      "Barr ，": "巴尔，",
+      "Miran ，": "米兰，",
+      "烹饪，": "库克，",
+      "美国证监会， FSA": "美国证监会、FSA",
+      "Hold Spring金融监管对话": "举行春季金融监管对话"
+    }
+  },
+  "game": {
+    "pre": {
+      "Steam": "Steam",
+      "Valve": "Valve",
+      "Counter-Strike 2": "Counter-Strike 2",
+      "Dota 2": "Dota 2",
+      "PUBG: BATTLEGROUNDS": "PUBG: BATTLEGROUNDS",
+      "Apex Legends": "Apex Legends",
+      "ELDEN RING": "ELDEN RING",
+      "ASUS": "华硕",
+      "MSI": "微星",
+      "NVIDIA": "NVIDIA",
+      "GeForce": "GeForce",
+      "RTX": "RTX",
+      "Ryzen": "Ryzen",
+      "Red Magic": "红魔",
+      "Gaming Laptop": "游戏笔记本",
+      "gaming laptop": "游戏笔记本",
+      "gaming PC": "游戏电脑",
+      "Gaming PC": "游戏电脑"
+    },
+    "post": {
+      "反恐精英2": "Counter-Strike 2",
+      "战场": "BATTLEGROUNDS",
+      "蒸汽": "Steam",
+      "阀门": "Valve",
+      "博彩": "游戏",
+      "爱科": "AGCO",
+      "红魔Gaming": "红魔游戏",
+      "游戏电脑显示器": "游戏显示器"
+    }
+  }
+}

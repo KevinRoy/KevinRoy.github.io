@@ -4,6 +4,7 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..", "..");
 const CACHE_PATH = path.join(ROOT, "data", "translation-cache.json");
+const GLOSSARY_PATH = path.join(ROOT, "data", "translation-glossary.json");
 const TRANSLATE_ENDPOINT = "https://api.mymemory.translated.net/get";
 const REQUEST_DELAY_MS = 850;
 
@@ -63,9 +64,34 @@ async function readCache() {
   }
 }
 
+async function readGlossary() {
+  try {
+    return JSON.parse(await fs.readFile(GLOSSARY_PATH, "utf8"));
+  } catch (error) {
+    if (error.code === "ENOENT") return {};
+    throw error;
+  }
+}
+
 async function writeCache(cache) {
   await fs.mkdir(path.dirname(CACHE_PATH), { recursive: true });
   await fs.writeFile(CACHE_PATH, `${JSON.stringify(cache, null, 2)}\n`, "utf8");
+}
+
+function glossaryEntries(glossary, namespace, phase) {
+  return [
+    ...Object.entries(glossary.common && glossary.common[phase] || {}),
+    ...Object.entries(glossary[namespace] && glossary[namespace][phase] || {}),
+  ].sort((a, b) => b[0].length - a[0].length);
+}
+
+function replaceAll(value, from, to) {
+  return value.split(from).join(to);
+}
+
+function applyGlossary(value, glossary, namespace, phase) {
+  return glossaryEntries(glossary, namespace, phase)
+    .reduce((result, [from, to]) => replaceAll(result, from, to), value);
 }
 
 function parseTranslation(data) {
@@ -88,12 +114,14 @@ async function translateText(text) {
 
 async function translateItems(items, namespace) {
   const cache = await readCache();
+  const glossary = await readGlossary();
   const translated = [];
   let changed = false;
 
   for (const item of items) {
     const title = item.title || "";
     const key = `${namespace}:${title}`;
+    const preparedTitle = applyGlossary(title, glossary, namespace, "pre");
 
     if (!shouldTranslate(title)) {
       translated.push(item);
@@ -101,12 +129,16 @@ async function translateItems(items, namespace) {
     }
 
     if (cache[key]) {
-      translated.push({ ...item, title: cache[key], originalTitle: title });
+      translated.push({
+        ...item,
+        title: applyGlossary(cache[key], glossary, namespace, "post"),
+        originalTitle: title,
+      });
       continue;
     }
 
     try {
-      const translatedTitle = await translateText(title);
+      const translatedTitle = applyGlossary(await translateText(preparedTitle), glossary, namespace, "post");
       if (translatedTitle && translatedTitle !== title) {
         cache[key] = translatedTitle;
         changed = true;
