@@ -27,4 +27,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Update finance feed"
-          file_pattern: "finance/index.html data/translation-cache.json"
+          file_pattern: "finance/index.html finance/articles data/translation-cache.json"

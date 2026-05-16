@@ -1,10 +1,12 @@
 const fs = require("fs/promises");
+const crypto = require("crypto");
 const path = require("path");
 const { translateItems } = require("./lib/translate");
 
 const ROOT = path.resolve(__dirname, "..");
 const FEEDS_PATH = path.join(ROOT, "data", "finance-feeds.json");
 const OUTPUT_PATH = path.join(ROOT, "finance", "index.html");
+const ARTICLES_DIR = path.join(ROOT, "finance", "articles");
 const MAX_ITEMS = 60;
 
 const entityMap = {
@@ -36,6 +38,13 @@ function stripTags(value) {
   return value.replace(/<[^>]*>/g, "");
 }
 
+function stripScripts(value) {
+  return value
+    .replace(/<script\b[\s\S]*?<\/script>/gi, "")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, "")
+    .replace(/<noscript\b[\s\S]*?<\/noscript>/gi, "");
+}
+
 function cleanText(value = "") {
   return decodeEntities(stripTags(stripCdata(value))).replace(/\s+/g, " ").trim();
 }
@@ -62,6 +71,10 @@ function firstTag(block, tagName) {
   return match ? cleanText(match[1]) : "";
 }
 
+function itemSlug(item) {
+  return crypto.createHash("sha1").update(item.link).digest("hex").slice(0, 12);
+}
+
 function atomLink(block, feedUrl) {
   const hrefMatch = block.match(/<link[^>]+href=["']([^"']+)["'][^>]*>/i);
   if (hrefMatch) return absolutizeUrl(decodeEntities(hrefMatch[1]), feedUrl);
@@ -73,6 +86,52 @@ function parseDate(value) {
   return Number.isNaN(time) ? 0 : time;
 }
 
+function paragraphTexts(html) {
+  return [...html.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)]
+    .map((match) => cleanText(match[1]))
+    .filter((text) => text.length > 40 && !/^(subscribe|related|for immediate release)$/i.test(text));
+}
+
+function extractOfficialContent(html, link) {
+  const cleanHtml = stripScripts(html);
+  const url = new URL(link);
+  let scoped = cleanHtml;
+
+  if (url.hostname.includes("federalreserve.gov")) {
+    const articleMatch = cleanHtml.match(/<div[^>]+id=["']article["'][^>]*>([\s\S]*?)<footer/i) ||
+      cleanHtml.match(/<div[^>]+class=["'][^"']*col-xs-12[^"']*["'][^>]*>([\s\S]*?)<\/main>/i);
+    scoped = articleMatch ? articleMatch[1] : cleanHtml;
+  }
+
+  if (url.hostname.includes("sec.gov")) {
+    const articleMatch = cleanHtml.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i) ||
+      cleanHtml.match(/<div[^>]+class=["'][^"']*field--name-body[^"']*["'][^>]*>([\s\S]*?)<\/div>/i) ||
+      cleanHtml.match(/<main\b[^>]*>([\s\S]*?)<\/main>/i);
+    scoped = articleMatch ? articleMatch[1] : cleanHtml;
+  }
+
+  const paragraphs = paragraphTexts(scoped)
+    .filter((text) => !/^(last update|media contact|investor contact)/i.test(text))
+    .slice(0, 3);
+  return paragraphs.join("\n\n").slice(0, 900);
+}
+
+async function fetchOfficialContent(item) {
+  const url = new URL(item.link);
+  const isOfficial = url.hostname.includes("federalreserve.gov") || url.hostname.includes("sec.gov");
+  if (!isOfficial) return "";
+
+  const response = await fetch(item.link, {
+    headers: {
+      "user-agent": "KevinRoy.github.io finance article builder (contact: https://github.com/KevinRoy)",
+      "accept": "text/html,application/xhtml+xml,*/*",
+    },
+  });
+
+  if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+  return extractOfficialContent(await response.text(), item.link);
+}
+
 function parseFeed(xml, feed) {
   const itemMatches = [...xml.matchAll(/<item\b[\s\S]*?<\/item>/gi)];
   const entryMatches = [...xml.matchAll(/<entry\b[\s\S]*?<\/entry>/gi)];
@@ -82,6 +141,10 @@ function parseFeed(xml, feed) {
   return blocks.map((block) => {
     const title = firstTag(block, "title");
     const link = isAtom ? atomLink(block, feed.url) : absolutizeUrl(firstTag(block, "link"), feed.url);
+    const summary = firstTag(block, "description") ||
+      firstTag(block, "summary") ||
+      firstTag(block, "content:encoded") ||
+      firstTag(block, "content");
     const date = parseDate(
       firstTag(block, "pubDate") ||
       firstTag(block, "published") ||
@@ -92,6 +155,7 @@ function parseFeed(xml, feed) {
     return {
       title,
       link,
+      summary,
       date,
       source: feed.name,
       category: feed.category,
@@ -139,33 +203,23 @@ function groupItems(items) {
 
 function renderFinanceItems(items) {
   return items.map((item) => `
-          <a class="finance-item" href="${escapeHtml(item.link)}" target="_blank" rel="noopener">
+          <a class="finance-item" href="${escapeHtml(item.localUrl)}">
             <span${item.originalTitle ? ` title="${escapeHtml(item.originalTitle)}"` : ""}>${escapeHtml(item.title)}</span>
             <time>${escapeHtml(formatDate(item.date))}</time>
           </a>`).join("");
 }
 
-function renderPage(items, errors) {
-  const generatedAt = formatDate(Date.now());
-  const groups = groupItems(items);
-  const sections = [...groups.entries()].map(([category, group]) => `
-        <section class="finance-section">
-          <h2>${escapeHtml(category)}</h2>${renderFinanceItems(group)}
-        </section>`).join("\n");
-
-  const errorBlock = errors.length ? `
-        <section class="finance-note">
-          <h2>暂时不可用的来源</h2>
-          <p>${escapeHtml(errors.map((error) => `${error.name}: ${error.message}`).join("；"))}</p>
-        </section>` : "";
+function renderShell({ title, description, activeNav, activeSection, body }) {
+  const navActive = (name) => activeNav === name ? " nav-tab-active" : "";
+  const sectionActive = (name) => activeSection === name ? " section-tab-active" : "";
 
   return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>金融消息 | 有时放纵</title>
+  <title>${escapeHtml(title)} | 有时放纵</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="金融消息聚合">
+  <meta name="description" content="${escapeHtml(description)}">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/style.css" type="text/css">
 </head>
@@ -183,9 +237,9 @@ function renderPage(items, errors) {
               <section class="switch-part switch-part1">
                 <nav class="header-menu">
                   <ul>
-                    <li><a class="nav-tab" href="/">IT</a></li>
-                    <li><a class="nav-tab nav-tab-active" href="/finance/">金融</a></li>
-                    <li><a class="nav-tab" href="/game/">游戏</a></li>
+                    <li><a class="nav-tab${navActive("it")}" href="/">IT</a></li>
+                    <li><a class="nav-tab${navActive("finance")}" href="/finance/">金融</a></li>
+                    <li><a class="nav-tab${navActive("game")}" href="/game/">游戏</a></li>
                     <li><a class="nav-tab" href="/archives">归档</a></li>
                   </ul>
                 </nav>
@@ -199,21 +253,11 @@ function renderPage(items, errors) {
     <div class="mid-col">
       <div class="body-wrap finance-wrap">
         <div class="section-tabs" aria-label="内容版块">
-          <a class="section-tab" href="/">IT</a>
-          <a class="section-tab section-tab-active" href="/finance/">金融</a>
-          <a class="section-tab" href="/game/">游戏</a>
+          <a class="section-tab${sectionActive("it")}" href="/">IT</a>
+          <a class="section-tab${sectionActive("finance")}" href="/finance/">金融</a>
+          <a class="section-tab${sectionActive("game")}" href="/game/">游戏</a>
         </div>
-
-        <section class="finance-header">
-          <h1>金融消息</h1>
-          <p>自动聚合公开 RSS 来源，只展示标题、来源、时间和原文链接。更新时间：${escapeHtml(generatedAt)}</p>
-        </section>
-${sections || `
-        <section class="finance-section">
-          <h2>暂无内容</h2>
-          <p>还没有抓取到金融消息，请稍后再试。</p>
-        </section>`}
-${errorBlock}
+${body}
       </div>
 
       <footer id="footer">
@@ -228,6 +272,75 @@ ${errorBlock}
 </body>
 </html>
 `;
+}
+
+function renderPage(items, errors) {
+  const generatedAt = formatDate(Date.now());
+  const groups = groupItems(items);
+  const sections = [...groups.entries()].map(([category, group]) => `
+        <section class="finance-section">
+          <h2>${escapeHtml(category)}</h2>${renderFinanceItems(group)}
+        </section>`).join("\n");
+
+  const errorBlock = errors.length ? `
+        <section class="finance-note">
+          <h2>暂时不可用的来源</h2>
+          <p>${escapeHtml(errors.map((error) => `${error.name}: ${error.message}`).join("；"))}</p>
+        </section>` : "";
+
+  return renderShell({
+    title: "金融消息",
+    description: "金融消息聚合",
+    activeNav: "finance",
+    activeSection: "finance",
+    body: `
+        <section class="finance-header">
+          <h1>金融消息</h1>
+          <p>自动聚合公开 RSS 来源，标题和摘要会在构建时翻译为中文。更新时间：${escapeHtml(generatedAt)}</p>
+        </section>
+${sections || `
+        <section class="finance-section">
+          <h2>暂无内容</h2>
+          <p>还没有抓取到金融消息，请稍后再试。</p>
+        </section>`}
+${errorBlock}
+`,
+  });
+}
+
+function renderArticlePage(item) {
+  const body = item.content || item.summary || "这个来源只提供标题或摘要信息，暂无可展示的正文内容。";
+  const bodyParagraphs = String(body).split(/\n{2,}/).map((paragraph) => paragraph.trim()).filter(Boolean);
+  return renderShell({
+    title: item.title,
+    description: item.title,
+    activeNav: "finance",
+    activeSection: "finance",
+    body: `
+        <article class="feed-detail">
+          <p class="feed-detail-back"><a href="/finance/">返回金融消息</a></p>
+          <header class="feed-detail-header">
+            <h1>${escapeHtml(item.title)}</h1>
+            <p>${escapeHtml(formatDate(item.date))} · ${escapeHtml(item.source)}</p>
+          </header>
+          <div class="feed-detail-body">
+            ${bodyParagraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("\n            ")}
+          </div>
+          <p class="feed-detail-source"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener">查看原文</a></p>
+        </article>
+`,
+  });
+}
+
+async function writeArticlePages(items) {
+  await fs.rm(ARTICLES_DIR, { recursive: true, force: true });
+  await fs.mkdir(ARTICLES_DIR, { recursive: true });
+
+  await Promise.all(items.map(async (item) => {
+    const dir = path.join(ARTICLES_DIR, item.slug);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(path.join(dir, "index.html"), renderArticlePage(item), "utf8");
+  }));
 }
 
 async function main() {
@@ -253,9 +366,23 @@ async function main() {
   });
 
   items.sort((a, b) => b.date - a.date);
-  const limited = await translateItems(items.slice(0, MAX_ITEMS), "finance");
+  const enriched = await Promise.all(items.slice(0, MAX_ITEMS).map(async (item) => {
+    try {
+      const content = await fetchOfficialContent(item);
+      return content ? { ...item, content } : item;
+    } catch (error) {
+      console.warn(`Content skipped: ${item.title} (${error.message})`);
+      return item;
+    }
+  }));
+
+  const limited = (await translateItems(enriched, "finance")).map((item) => {
+    const slug = itemSlug(item);
+    return { ...item, slug, localUrl: `/finance/articles/${slug}/` };
+  });
 
   await fs.mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
+  await writeArticlePages(limited);
   await fs.writeFile(OUTPUT_PATH, renderPage(limited, errors), "utf8");
 
   console.log(`Generated ${path.relative(ROOT, OUTPUT_PATH)} with ${limited.length} items.`);

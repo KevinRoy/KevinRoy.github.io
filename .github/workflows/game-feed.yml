@@ -27,4 +27,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Update game feed"
-          file_pattern: "game/index.html data/translation-cache.json"
+          file_pattern: "game/index.html game/articles data/translation-cache.json"

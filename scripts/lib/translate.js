@@ -7,6 +7,7 @@ const CACHE_PATH = path.join(ROOT, "data", "translation-cache.json");
 const GLOSSARY_PATH = path.join(ROOT, "data", "translation-glossary.json");
 const TRANSLATE_ENDPOINT = "https://api.mymemory.translated.net/get";
 const REQUEST_DELAY_MS = 850;
+const MAX_CHUNK_LENGTH = 450;
 
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -112,51 +113,125 @@ async function translateText(text) {
   return parseTranslation(data);
 }
 
-async function translateItems(items, namespace) {
-  const cache = await readCache();
-  const glossary = await readGlossary();
-  const translated = [];
-  let changed = false;
+function cacheKey(namespace, field, value) {
+  return field === "title" ? `${namespace}:${value}` : `${namespace}:${field}:${value}`;
+}
 
-  for (const item of items) {
-    const title = item.title || "";
-    const key = `${namespace}:${title}`;
-    const preparedTitle = applyGlossary(title, glossary, namespace, "pre");
+function splitForTranslation(text) {
+  const normalized = String(text || "").replace(/\s+/g, " ").trim();
+  if (normalized.length <= MAX_CHUNK_LENGTH) return normalized ? [normalized] : [];
 
-    if (!shouldTranslate(title)) {
-      translated.push(item);
+  const parts = normalized.match(/[^.!?。！？；;]+[.!?。！？；;]?/g) || [normalized];
+  const chunks = [];
+  let current = "";
+
+  for (const part of parts) {
+    const next = current ? `${current} ${part.trim()}` : part.trim();
+    if (next.length <= MAX_CHUNK_LENGTH) {
+      current = next;
       continue;
     }
 
-    if (cache[key]) {
-      translated.push({
-        ...item,
-        title: applyGlossary(cache[key], glossary, namespace, "post"),
-        originalTitle: title,
-      });
+    if (current) chunks.push(current);
+    current = part.trim();
+
+    while (current.length > MAX_CHUNK_LENGTH) {
+      chunks.push(current.slice(0, MAX_CHUNK_LENGTH));
+      current = current.slice(MAX_CHUNK_LENGTH);
+    }
+  }
+
+  if (current) chunks.push(current);
+  return chunks;
+}
+
+async function translateValue(value, namespace, field, context) {
+  const text = String(value || "").trim();
+  if (!shouldTranslate(text)) return { value: text, originalValue: "" };
+  const allowFallback = field === "title";
+
+  const key = cacheKey(namespace, field, text);
+  if (context.cache[key]) {
+    const cached = applyGlossary(context.cache[key], context.glossary, namespace, "post");
+    if (!allowFallback && !hasChinese(cached)) {
+      return { value: "", originalValue: text };
+    }
+    return {
+      value: cached,
+      originalValue: text,
+    };
+  }
+
+  const chunks = splitForTranslation(text);
+  const translatedChunks = [];
+
+  for (const chunk of chunks) {
+    const chunkKey = cacheKey(namespace, field, chunk);
+    if (context.cache[chunkKey]) {
+      translatedChunks.push(applyGlossary(context.cache[chunkKey], context.glossary, namespace, "post"));
       continue;
     }
 
     try {
-      const translatedTitle = applyGlossary(await translateText(preparedTitle), glossary, namespace, "post");
-      if (translatedTitle && translatedTitle !== title) {
-        cache[key] = translatedTitle;
-        changed = true;
-        translated.push({ ...item, title: translatedTitle, originalTitle: title });
+      const preparedText = applyGlossary(chunk, context.glossary, namespace, "pre");
+      const translated = applyGlossary(await translateText(preparedText), context.glossary, namespace, "post");
+      if (translated && translated !== chunk) {
+        context.cache[chunkKey] = translated;
+        context.changed = true;
+        translatedChunks.push(translated);
       } else {
-        translated.push(item);
+        translatedChunks.push(chunk);
       }
     } catch (error) {
-      console.warn(`Translation skipped: ${title} (${error.message})`);
-      translated.push(item);
+      console.warn(`Translation skipped: ${chunk.slice(0, 80)} (${error.message})`);
+      if (allowFallback) translatedChunks.push(chunk);
     }
+
     await delay(REQUEST_DELAY_MS);
   }
 
-  if (changed) await writeCache(cache);
+  const translatedText = translatedChunks.join(" ").trim();
+  if (translatedText && translatedText !== text) {
+    context.cache[key] = translatedText;
+    context.changed = true;
+    return { value: translatedText, originalValue: text };
+  }
+
+  return allowFallback
+    ? { value: text, originalValue: "" }
+    : { value: "", originalValue: text };
+}
+
+async function translateItems(items, namespace) {
+  const cache = await readCache();
+  const glossary = await readGlossary();
+  const translated = [];
+  const context = { cache, glossary, changed: false };
+
+  for (const item of items) {
+    const title = item.title || "";
+    const summary = item.summary || "";
+    const content = item.content || "";
+    const titleResult = await translateValue(title, namespace, "title", context);
+    const summaryResult = await translateValue(summary, namespace, "summary", context);
+    const contentResult = await translateValue(content, namespace, "content", context);
+
+    translated.push({
+      ...item,
+      title: titleResult.value,
+      originalTitle: titleResult.originalValue,
+      summary: summaryResult.value,
+      originalSummary: summaryResult.originalValue,
+      content: contentResult.value,
+      originalContent: contentResult.originalValue,
+    });
+  }
+
+  if (context.changed) await writeCache(cache);
   return translated;
 }
 
 module.exports = {
+  translateValue,
   translateItems,
 };

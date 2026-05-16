@@ -1,4 +1,5 @@
 const fs = require("fs/promises");
+const crypto = require("crypto");
 const https = require("https");
 const path = require("path");
 const { translateItems } = require("./lib/translate");
@@ -6,6 +7,7 @@ const { translateItems } = require("./lib/translate");
 const ROOT = path.resolve(__dirname, "..");
 const FEEDS_PATH = path.join(ROOT, "data", "game-feeds.json");
 const OUTPUT_PATH = path.join(ROOT, "game", "index.html");
+const ARTICLES_DIR = path.join(ROOT, "game", "articles");
 const MAX_ITEMS = 80;
 const GDELT_ENDPOINT = "https://api.gdeltproject.org/api/v2/doc/doc";
 const GDELT_DELAY_MS = 5500;
@@ -41,6 +43,10 @@ function escapeHtml(value = "") {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+function itemSlug(item) {
+  return crypto.createHash("sha1").update(item.link).digest("hex").slice(0, 12);
 }
 
 function parseDate(value) {
@@ -132,13 +138,13 @@ async function fetchSteam(feed) {
   const url = new URL("https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/");
   url.searchParams.set("appid", String(feed.appid));
   url.searchParams.set("count", "10");
-  url.searchParams.set("maxlength", "300");
   const data = await fetchJson(url);
   const items = data.appnews && Array.isArray(data.appnews.newsitems) ? data.appnews.newsitems : [];
 
   return items.map((item) => ({
     title: `${feed.name}: ${cleanText(item.title)}`,
     link: item.url,
+    content: cleanText(item.contents || "").slice(0, 900),
     date: parseDate(item.date),
     source: "Steam",
     category: feed.category,
@@ -159,6 +165,7 @@ async function fetchGdelt(feed) {
   return articles.map((article) => ({
     title: cleanText(article.title),
     link: article.url,
+    summary: "",
     date: parseDate(article.seendate || article.datetime),
     source: cleanText(article.domain || feed.name),
     category: feed.category,
@@ -176,33 +183,23 @@ function groupItems(items) {
 
 function renderItems(items) {
   return items.map((item) => `
-          <a class="finance-item" href="${escapeHtml(item.link)}" target="_blank" rel="noopener">
+          <a class="finance-item" href="${escapeHtml(item.localUrl)}">
             <span${item.originalTitle ? ` title="${escapeHtml(item.originalTitle)}"` : ""}>${escapeHtml(item.title)}</span>
             <time>${escapeHtml(formatDate(item.date))}</time>
           </a>`).join("");
 }
 
-function renderPage(items, errors) {
-  const generatedAt = formatDate(Date.now());
-  const groups = groupItems(items);
-  const sections = [...groups.entries()].map(([category, group]) => `
-        <section class="finance-section">
-          <h2>${escapeHtml(category)}</h2>${renderItems(group)}
-        </section>`).join("\n");
-
-  const errorBlock = errors.length ? `
-        <section class="finance-note">
-          <h2>暂时不可用的来源</h2>
-          <p>${escapeHtml(errors.map((error) => `${error.name}: ${error.message}`).join("；"))}</p>
-        </section>` : "";
+function renderShell({ title, description, activeNav, activeSection, body }) {
+  const navActive = (name) => activeNav === name ? " nav-tab-active" : "";
+  const sectionActive = (name) => activeSection === name ? " section-tab-active" : "";
 
   return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>游戏资讯 | 有时放纵</title>
+  <title>${escapeHtml(title)} | 有时放纵</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="游戏资讯聚合">
+  <meta name="description" content="${escapeHtml(description)}">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/style.css" type="text/css">
 </head>
@@ -220,9 +217,9 @@ function renderPage(items, errors) {
               <section class="switch-part switch-part1">
                 <nav class="header-menu">
                   <ul>
-                    <li><a class="nav-tab" href="/">IT</a></li>
-                    <li><a class="nav-tab" href="/finance/">金融</a></li>
-                    <li><a class="nav-tab nav-tab-active" href="/game/">游戏</a></li>
+                    <li><a class="nav-tab${navActive("it")}" href="/">IT</a></li>
+                    <li><a class="nav-tab${navActive("finance")}" href="/finance/">金融</a></li>
+                    <li><a class="nav-tab${navActive("game")}" href="/game/">游戏</a></li>
                     <li><a class="nav-tab" href="/archives">归档</a></li>
                   </ul>
                 </nav>
@@ -236,21 +233,11 @@ function renderPage(items, errors) {
     <div class="mid-col">
       <div class="body-wrap finance-wrap">
         <div class="section-tabs" aria-label="内容版块">
-          <a class="section-tab" href="/">IT</a>
-          <a class="section-tab" href="/finance/">金融</a>
-          <a class="section-tab section-tab-active" href="/game/">游戏</a>
+          <a class="section-tab${sectionActive("it")}" href="/">IT</a>
+          <a class="section-tab${sectionActive("finance")}" href="/finance/">金融</a>
+          <a class="section-tab${sectionActive("game")}" href="/game/">游戏</a>
         </div>
-
-        <section class="finance-header">
-          <h1>游戏资讯</h1>
-          <p>自动聚合 Steam 官方游戏更新和 GDELT 游戏新闻，只展示标题、时间和原文链接。更新时间：${escapeHtml(generatedAt)}</p>
-        </section>
-${sections || `
-        <section class="finance-section">
-          <h2>暂无内容</h2>
-          <p>还没有抓取到游戏资讯，请稍后再试。</p>
-        </section>`}
-${errorBlock}
+${body}
       </div>
 
       <footer id="footer">
@@ -265,6 +252,75 @@ ${errorBlock}
 </body>
 </html>
 `;
+}
+
+function renderPage(items, errors) {
+  const generatedAt = formatDate(Date.now());
+  const groups = groupItems(items);
+  const sections = [...groups.entries()].map(([category, group]) => `
+        <section class="finance-section">
+          <h2>${escapeHtml(category)}</h2>${renderItems(group)}
+        </section>`).join("\n");
+
+  const errorBlock = errors.length ? `
+        <section class="finance-note">
+          <h2>暂时不可用的来源</h2>
+          <p>${escapeHtml(errors.map((error) => `${error.name}: ${error.message}`).join("；"))}</p>
+        </section>` : "";
+
+  return renderShell({
+    title: "游戏资讯",
+    description: "游戏资讯聚合",
+    activeNav: "game",
+    activeSection: "game",
+    body: `
+        <section class="finance-header">
+          <h1>游戏资讯</h1>
+          <p>自动聚合 Steam 官方游戏更新和 GDELT 游戏新闻，标题和摘要会在构建时翻译为中文。更新时间：${escapeHtml(generatedAt)}</p>
+        </section>
+${sections || `
+        <section class="finance-section">
+          <h2>暂无内容</h2>
+          <p>还没有抓取到游戏资讯，请稍后再试。</p>
+        </section>`}
+${errorBlock}
+`,
+  });
+}
+
+function renderArticlePage(item) {
+  const body = item.content || item.summary || "这个来源未提供可抓取正文，暂时只能显示标题。";
+  const bodyParagraphs = String(body).split(/\n{2,}/).map((paragraph) => paragraph.trim()).filter(Boolean);
+  return renderShell({
+    title: item.title,
+    description: item.title,
+    activeNav: "game",
+    activeSection: "game",
+    body: `
+        <article class="feed-detail">
+          <p class="feed-detail-back"><a href="/game/">返回游戏资讯</a></p>
+          <header class="feed-detail-header">
+            <h1>${escapeHtml(item.title)}</h1>
+            <p>${escapeHtml(formatDate(item.date))} · ${escapeHtml(item.source)}</p>
+          </header>
+          <div class="feed-detail-body">
+            ${bodyParagraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("\n            ")}
+          </div>
+          <p class="feed-detail-source"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener">查看原文</a></p>
+        </article>
+`,
+  });
+}
+
+async function writeArticlePages(items) {
+  await fs.rm(ARTICLES_DIR, { recursive: true, force: true });
+  await fs.mkdir(ARTICLES_DIR, { recursive: true });
+
+  await Promise.all(items.map(async (item) => {
+    const dir = path.join(ARTICLES_DIR, item.slug);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(path.join(dir, "index.html"), renderArticlePage(item), "utf8");
+  }));
 }
 
 async function main() {
@@ -296,9 +352,13 @@ async function main() {
   }
 
   items.sort((a, b) => b.date - a.date);
-  const limited = await translateItems(items.slice(0, MAX_ITEMS), "game");
+  const limited = (await translateItems(items.slice(0, MAX_ITEMS), "game")).map((item) => {
+    const slug = itemSlug(item);
+    return { ...item, slug, localUrl: `/game/articles/${slug}/` };
+  });
 
   await fs.mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
+  await writeArticlePages(limited);
   await fs.writeFile(OUTPUT_PATH, renderPage(limited, errors), "utf8");
 
   console.log(`Generated ${path.relative(ROOT, OUTPUT_PATH)} with ${limited.length} items.`);
