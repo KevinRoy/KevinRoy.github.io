@@ -238,6 +238,7 @@ function renderShell({ title, description, activeNav, activeSection, body }) {
                 <nav class="header-menu">
                   <ul>
                     <li><a class="nav-tab${navActive("it")}" href="/">IT</a></li>
+                    <li><a class="nav-tab" href="/ai/">AI</a></li>
                     <li><a class="nav-tab${navActive("finance")}" href="/finance/">金融</a></li>
                     <li><a class="nav-tab${navActive("game")}" href="/game/">游戏</a></li>
                     <li><a class="nav-tab" href="/archives">归档</a></li>
@@ -254,6 +255,7 @@ function renderShell({ title, description, activeNav, activeSection, body }) {
       <div class="body-wrap finance-wrap">
         <div class="section-tabs" aria-label="内容版块">
           <a class="section-tab${sectionActive("it")}" href="/">IT</a>
+          <a class="section-tab" href="/ai/">AI</a>
           <a class="section-tab${sectionActive("finance")}" href="/finance/">金融</a>
           <a class="section-tab${sectionActive("game")}" href="/game/">游戏</a>
         </div>
